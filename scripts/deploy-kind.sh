@@ -9,8 +9,14 @@ echo "========================================"
 
 echo ""
 echo "[1/10] Building producer and frontend images..."
-docker build -t ttcpoint-producer:latest ./ingestion
-docker build -t ttcpoint-frontend:latest ./frontend
+# --provenance=false --sbom=false: without these, current Docker
+# defaults to buildx attestations, producing a multi-manifest image
+# instead of a plain one. kind load docker-image has to save/import the
+# whole thing through a docker save | ctr import pipe, and the extra
+# manifest-list layers made that reliably spike memory enough to get
+# killed on this machine - a plain single-manifest image loads cleanly.
+docker build --provenance=false --sbom=false -t ttcpoint-producer:latest ./ingestion
+docker build --provenance=false --sbom=false -t ttcpoint-frontend:latest ./frontend
 
 echo ""
 echo "[2/10] Loading images into Kind..."
