@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: producer
+  namespace: ttcpoint
+
+spec:
+  # MUST stay 1 - multiple replicas would each independently poll TTC's
+  # feed and publish duplicate vehicle positions into Kafka. Never scale
+  # this up.
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: producer
+
+  template:
+    metadata:
+      labels:
+        app: producer
+
+    spec:
+      containers:
+        - name: producer
+          image: ttcpoint-producer:latest
+          imagePullPolicy: Never
+
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka:29092"

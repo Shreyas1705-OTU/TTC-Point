@@ -73,5 +73,18 @@ services:
       elasticsearch:
         condition: service_healthy
 
+  producer:
+    build:
+      context: ./ingestion
+    container_name: ttcpoint-producer
+    environment:
+      # kafka:29092 is the INTERNAL listener (Phase 2) - the producer now
+      # runs on the same Docker network as Kafka instead of the host.
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    depends_on:
+      kafka:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   es-data:

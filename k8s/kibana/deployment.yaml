@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: kibana
+  namespace: ttcpoint
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: kibana
+
+  template:
+    metadata:
+      labels:
+        app: kibana
+
+    spec:
+      containers:
+        - name: kibana
+          image: docker.elastic.co/kibana/kibana:9.5.4
+
+          ports:
+            - containerPort: 5601
+
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: "http://elasticsearch:9200"
+            - name: XPACK_SECURITY_ENABLED
+              value: "false"
+
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: 5601
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 12

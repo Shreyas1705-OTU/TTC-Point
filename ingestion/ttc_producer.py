@@ -7,6 +7,7 @@ holds messages in the topic until a consumer reads them, so a consumer can
 be stopped and restarted without losing in-flight data.
 """
 import json
+import os
 import sys
 import time
 
@@ -16,7 +17,10 @@ from google.transit import gtfs_realtime_pb2
 
 VEHICLE_POSITIONS_URL = "https://bustime.ttc.ca/gtfsrt/vehicles"
 POLL_INTERVAL_SECONDS = 20
-KAFKA_BOOTSTRAP_SERVERS = "localhost:9092"
+# localhost:9092 for running on the host (Phases 1-4); overridden to
+# "kafka:29092" via env var once this runs as its own container/pod and
+# reaches Kafka over the Docker/K8s network instead (Phase 5).
+KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
 KAFKA_TOPIC = "vehicle-positions"
 
 

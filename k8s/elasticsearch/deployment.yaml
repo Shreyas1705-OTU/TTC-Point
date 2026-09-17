@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: elasticsearch
+  namespace: ttcpoint
+
+spec:
+  # Single node - matches the docker-compose setup. This is live vehicle
+  # state, not a system of record, so losing data on a pod restart is
+  # acceptable; no PersistentVolumeClaim.
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: elasticsearch
+
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+
+    spec:
+      containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:9.5.4
+
+          ports:
+            - containerPort: 9200
+
+          env:
+            - name: discovery.type
+              value: single-node
+            # Local demo cluster, not production - cert/password setup
+            # would add real friction for zero benefit here.
+            - name: xpack.security.enabled
+              value: "false"
+            - name: ES_JAVA_OPTS
+              value: "-Xms512m -Xmx512m"
+
+          volumeMounts:
+            - name: es-data
+              mountPath: /usr/share/elasticsearch/data
+
+          readinessProbe:
+            httpGet:
+              path: /_cluster/health
+              port: 9200
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 12
+
+          livenessProbe:
+            httpGet:
+              path: /_cluster/health
+              port: 9200
+            initialDelaySeconds: 40
+            periodSeconds: 15
+            timeoutSeconds: 5
+
+      volumes:
+        # emptyDir, not a PVC: Elasticsearch needs a writable data
+        # directory to start at all, but nothing here needs to survive a
+        # pod restart (see replicas note above).
+        - name: es-data
+          emptyDir: {}
