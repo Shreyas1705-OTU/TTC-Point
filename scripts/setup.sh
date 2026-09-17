@@ -29,8 +29,8 @@ curl -s -X PUT "http://localhost:9200/_index_template/vehicle-positions-template
 echo ""
 
 echo ""
-echo "[4/5] Starting Logstash, Kibana, and the producer..."
-docker compose up -d --build logstash kibana producer
+echo "[4/5] Starting Logstash, Kibana, the producer, and the frontend..."
+docker compose up -d --build logstash kibana producer frontend
 
 echo ""
 echo "[5/5] Waiting for Kibana, then importing the saved map..."
@@ -45,5 +45,6 @@ echo ""
 echo "========================================"
 echo " TTCPoint is ready!"
 echo "========================================"
+echo "Frontend:      http://localhost:8080"
 echo "Kibana:        http://localhost:5601"
 echo "Elasticsearch: http://localhost:9200"

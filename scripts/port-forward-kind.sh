@@ -13,7 +13,13 @@ echo "Starting Elasticsearch on :9200..."
 kubectl port-forward svc/elasticsearch 9200:9200 -n ttcpoint &
 ES_PID=$!
 
+echo "Starting the Leaflet frontend on :8080..."
+kubectl port-forward svc/frontend 8080:80 -n ttcpoint &
+FRONTEND_PID=$!
+
 echo ""
+echo "Frontend (Leaflet):"
+echo "http://localhost:8080"
 echo "Kibana:"
 echo "http://localhost:5601"
 echo "Elasticsearch:"
@@ -22,6 +28,6 @@ echo "http://localhost:9200"
 echo ""
 echo "Press Ctrl+C to stop port forwarding."
 
-trap "kill $KIBANA_PID $ES_PID" EXIT
+trap "kill $KIBANA_PID $ES_PID $FRONTEND_PID" EXIT
 
 wait

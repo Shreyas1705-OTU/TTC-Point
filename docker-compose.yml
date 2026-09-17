@@ -38,6 +38,14 @@ services:
       # add friction with zero payoff here.
       - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      # Lets the Leaflet frontend (Phase 6) query Elasticsearch directly
+      # from the browser instead of needing its own backend/proxy just to
+      # get around the browser's same-origin policy. Wildcard origin is
+      # fine here for the same reason security is disabled above - local
+      # demo only, not a real deployment.
+      - http.cors.enabled=true
+      - http.cors.allow-origin=/.*/
+      - http.cors.allow-headers=X-Requested-With,Content-Type,Content-Length,Authorization
     ports:
       - "9200:9200"
     volumes:
@@ -85,6 +93,16 @@ services:
       kafka:
         condition: service_healthy
     restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: ttcpoint-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
 
 volumes:
   es-data:

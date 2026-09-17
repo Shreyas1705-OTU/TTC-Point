@@ -8,19 +8,21 @@ echo " TTCPoint Kubernetes Deployment"
 echo "========================================"
 
 echo ""
-echo "[1/9] Building producer image..."
+echo "[1/10] Building producer and frontend images..."
 docker build -t ttcpoint-producer:latest ./ingestion
+docker build -t ttcpoint-frontend:latest ./frontend
 
 echo ""
-echo "[2/9] Loading image into Kind..."
+echo "[2/10] Loading images into Kind..."
 kind load docker-image ttcpoint-producer:latest --name ttcpoint
+kind load docker-image ttcpoint-frontend:latest --name ttcpoint
 
 echo ""
-echo "[3/9] Creating namespace..."
+echo "[3/10] Creating namespace..."
 kubectl apply -f k8s/namespace.yaml
 
 echo ""
-echo "[4/9] Generating ConfigMaps from repo source files..."
+echo "[4/10] Generating ConfigMaps from repo source files..."
 # Generated, not hand-duplicated, so logstash/ and data/lookups/ stay the
 # single source of truth instead of drifting from a second copy in k8s/.
 kubectl create configmap logstash-pipeline \
@@ -38,7 +40,7 @@ kubectl create configmap route-lookups \
   -n ttcpoint --dry-run=client -o yaml | kubectl apply -f -
 
 echo ""
-echo "[5/9] Deploying Kafka..."
+echo "[5/10] Deploying Kafka..."
 kubectl apply -f k8s/kafka/
 kubectl rollout status deployment/kafka -n ttcpoint --timeout=180s
 
@@ -50,12 +52,12 @@ kubectl exec deployment/kafka -n ttcpoint -- \
   --partitions 3 --replication-factor 1
 
 echo ""
-echo "[6/9] Deploying Elasticsearch..."
+echo "[6/10] Deploying Elasticsearch..."
 kubectl apply -f k8s/elasticsearch/
 kubectl rollout status deployment/elasticsearch -n ttcpoint --timeout=180s
 
 echo ""
-echo "[7/9] Applying Elasticsearch index template..."
+echo "[7/10] Applying Elasticsearch index template..."
 # Must happen before Logstash writes anything, same reasoning as
 # scripts/setup.sh (the compose path) - see that script's comment.
 kubectl port-forward svc/elasticsearch 9200:9200 -n ttcpoint >/dev/null 2>&1 &
@@ -74,10 +76,11 @@ kill $ES_PF_PID 2>/dev/null || true
 trap - EXIT
 
 echo ""
-echo "[8/9] Deploying Logstash, Kibana, and the producer..."
+echo "[8/10] Deploying Logstash, Kibana, the producer, and the frontend..."
 kubectl apply -f k8s/logstash/
 kubectl apply -f k8s/kibana/
 kubectl apply -f k8s/producer/
+kubectl apply -f k8s/frontend/
 
 # :latest tags and ConfigMap-only changes both look "unchanged" to
 # kubectl apply, so a redeploy with new code/config wouldn't otherwise
@@ -87,10 +90,11 @@ kubectl rollout restart deployment/logstash -n ttcpoint
 kubectl rollout restart deployment/producer -n ttcpoint
 
 echo ""
-echo "[9/9] Waiting for deployments, then importing the saved map..."
+echo "[9/10] Waiting for deployments, then importing the saved map..."
 kubectl rollout status deployment/logstash -n ttcpoint --timeout=180s
 kubectl rollout status deployment/kibana -n ttcpoint --timeout=180s
 kubectl rollout status deployment/producer -n ttcpoint --timeout=180s
+kubectl rollout status deployment/frontend -n ttcpoint --timeout=180s
 
 kubectl port-forward svc/kibana 5601:5601 -n ttcpoint >/dev/null 2>&1 &
 KIBANA_PF_PID=$!

@@ -37,6 +37,15 @@ spec:
               value: "false"
             - name: ES_JAVA_OPTS
               value: "-Xms512m -Xmx512m"
+            # Lets the Leaflet frontend query Elasticsearch directly from
+            # the browser (via kubectl port-forward) - same reasoning as
+            # docker-compose's elasticsearch service.
+            - name: http.cors.enabled
+              value: "true"
+            - name: http.cors.allow-origin
+              value: "/.*/"
+            - name: http.cors.allow-headers
+              value: "X-Requested-With,Content-Type,Content-Length,Authorization"
 
           volumeMounts:
             - name: es-data

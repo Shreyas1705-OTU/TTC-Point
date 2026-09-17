@@ -1,0 +1,64 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #0f1115;
+}
+
+#map {
+  position: absolute;
+  inset: 0;
+}
+
+#panel {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  background: rgba(20, 22, 28, 0.92);
+  color: #eee;
+  padding: 14px 18px;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  min-width: 180px;
+}
+
+#panel h1 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+}
+
+#stats {
+  font-size: 13px;
+  color: #aab;
+  margin-bottom: 10px;
+}
+
+#legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  margin-right: 12px;
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot.bus {
+  background: #c51616;
+}
+
+.dot.streetcar {
+  background: #610dfb;
+}
+
+.leaflet-popup-content b {
+  color: #333;
+}
