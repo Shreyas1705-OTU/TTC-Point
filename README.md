@@ -32,6 +32,10 @@ Scope is bus + streetcar only — TTC does not publish live GPS positions
 for the subway (it's signal-based, not GPS-tracked), so there was no
 live data to show for it.
 
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for prerequisites, a full
+walkthrough of both paths, and troubleshooting for everything that
+actually went wrong while building this.
+
 ## Quick start (Kubernetes - default)
 
 This is the primary, "real" deployment path: a local Kind cluster
