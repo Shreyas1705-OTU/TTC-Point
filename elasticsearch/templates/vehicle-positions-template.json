@@ -1,0 +1,19 @@
+{
+  "index_patterns": ["vehicle-positions"],
+  "template": {
+    "mappings": {
+      "properties": {
+        "vehicle_id": { "type": "keyword" },
+        "route_id": { "type": "keyword" },
+        "route_short_name": { "type": "keyword" },
+        "route_color": { "type": "keyword" },
+        "route_type": { "type": "keyword" },
+        "trip_id": { "type": "keyword" },
+        "location": { "type": "geo_point" },
+        "bearing": { "type": "float" },
+        "speed": { "type": "float" },
+        "@timestamp": { "type": "date" }
+      }
+    }
+  }
+}
