@@ -13,8 +13,14 @@ const ROUTE_COLORS = {
 
 const map = L.map("map").setView([43.7, -79.4], 11);
 
-L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-  attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+// Plain OpenStreetMap tiles - genuinely free and key-free, unlike
+// CARTO's basemap CDN (which now watermarks "API KEY REQUIRED" over
+// every tile without one). The dark look comes from a CSS filter on the
+// tile pane instead (see style.css) rather than a paid/keyed dark tile
+// set - keeps the "no API key friction" principle intact everywhere,
+// not just for the TTC feed itself.
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution: '&copy; OpenStreetMap contributors',
   maxZoom: 19,
 }).addTo(map);
 

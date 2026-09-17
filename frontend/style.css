@@ -9,6 +9,17 @@ html, body {
 #map {
   position: absolute;
   inset: 0;
+  background: #0f1115;
+}
+
+/* Standard OpenStreetMap tiles are light by default (no free dark tile
+   set exists without an API key - see app.js). Inverting + rotating hue
+   turns light-with-dark-roads into dark-with-light-roads, a common
+   trick for a "free" dark map. Scoped to the tile pane only, so it
+   doesn't touch marker/popup colors (bus red, streetcar purple) which
+   live in a separate Leaflet pane. */
+.leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9);
 }
 
 #panel {
